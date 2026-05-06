@@ -1,0 +1,41 @@
+apiversion: apps/v1
+kind: Deployment
+metadata:
+  name: task-api
+  namespace: task-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task-api
+  template:
+    metadata:
+      labels:
+        app: task-api
+      spec:
+        containers:
+        - name: task-api 
+          image: task-api
+          ports:
+          - containerPort: 3002
+          env:
+          - name: DB_HOST 
+            valueForm:
+              configMapKeyRef:
+                name: app-config 
+                key: DB_HOST
+          - name: DB_NAME 
+            valueForm:
+              configMapKeyRef:
+                name: app-config 
+                key:  DB_NAME   
+          - name: DB_USER
+            valueForm:
+              secretkeyRef:
+                name: db-secret 
+                kry:  DB_USER 
+          - name: DB_PASSWORD
+            valueForm:
+              secretkeyRef:
+                name: db-secret 
+                key:password 

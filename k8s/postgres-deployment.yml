@@ -1,0 +1,35 @@
+apiversion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: task-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+    template:
+      metadata:
+        labels:
+          app: postgres
+      spec:
+        containers:
+          - name: postgres
+            image: postgres:15
+            ports:
+              - containerPort: 5432
+            env:
+              - name: POSTGRES_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: db-secret
+                    key: DB_USER
+              - name: POSTGRES_DB
+                value: taskdb
+            volumeMounts:
+              - mountPath: /var/lib/postgresql/data
+                name: postgres-storage
+            volumes:
+              - name: postgres-storage
+                persistentVolumeClaim:
+                claimName: postgres-pvc
